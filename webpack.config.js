@@ -1,43 +1,88 @@
-const path=require("path");
-const mmm=require("@pmmmwh/react-refresh-webpack-plugin");
+const path = require("path");
+// const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
+// const pmmmwh = require("@pmmmwh/react-refresh-webpack-plugin");
+//use only test
 
-module.exports={
-    name:"wordChainGame",
-    mode:"development",
-    devtool:"eval",
-    resolve:{
-        extensions:[".js",".jsx"]
+module.exports = {
+  name: "demo",
+  // mode: "development",
+  //use only test
+  mode: "production",
+  devtool: "eval",
+  resolve: {
+    extensions: [".js", ".jsx"],
+  },
+  entry: {
+    app: {
+      import: "./client.jsx",
     },
-    entry:{
-        app:["./client"],
-    },
-    module:{
-        rules:[{
-            test: /\.jsx?/,
-            loader:"babel-loader",
-            options:{
-                presets:[
-                    "@babel/preset-env",
-                    "@babel/preset-react"
-                ],
-            plugins:[
-                "@babel/plugin-proposal-class-properties",
-                "react-refresh/babel"
-                ]
-            },
-        }]
-    },
-    plugins:[
-        new mmm()
-    ],
-    output:{
-        filename:"app.js",
-        path:path.join(__dirname,"dist"),
-        publicPath: '/dist/',
-    },
-    devServer:{
-        publicPath:'/dist',
-        hot:true,
+    // another: {
+    //   import: [
+    //     "./components/About",
+    //     "./components/ErrorPage",
+    //     "./components/Footer",
+    //   ],
+    //   dependOn: "shared",
+    // },
+    // shared: "styled-components",
+  },
+  module: {
+    rules: [
+      {
+        test: /\.jsx?/,
+        loader: "babel-loader",
+        options: {
+          presets: ["@babel/preset-env", "@babel/preset-react"],
+          plugins: [
+            "@babel/plugin-proposal-class-properties",
+            // "react-refresh/babel",
+            //use only test
+          ],
+        }, //endOptions
+      },
+      {
+        test: /\.(txt)/,
+        type: "asset/source",
+      },
+    ], //endRules
+  }, //endModules
+  // plugins: [new pmmmwh()],
+  // plugins: [new BundleAnalyzerPlugin()],
+  //use only test
+  output: {
+    filename: "[name].bundle.js",
+    // chunkFilename: "[name].[chunkhash].js",
+    path: path.join(__dirname, "dist"),
+    publicPath: "dist/",
+    clean: true,
+  },
+  devServer: {
+    publicPath: "/dist/",
+    hot: true,
+  },
 
-    },
+  // optimization: {
+  //   splitChunks: {
+  //     name: "vendor",
+  //     // test: /[\\/]node_modules[\\/]/,
+  //     chunks: "initial",
+  //     minSize: 50000,
+  //     minChunks: 1,
+  //   },
+  // },
+  // optimization: {
+  //   splitChunks: {
+  //     cacheGroups: {
+  //       vendor: {
+  //         test: /[\\/]node_modules[\\/]^(react|react-dom)[\\/]/,
+  //         name: "vendor",
+  //         chunks: "initial",
+  //       },
+  //     },
+  //   },
+  // },
+  optimization: {
+    // runtimeChunk: "single",
+  },
+  //optimizationEnd,
 };
