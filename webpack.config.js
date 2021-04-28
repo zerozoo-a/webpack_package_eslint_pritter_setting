@@ -1,88 +1,76 @@
 const path = require("path");
+const webpack = require("webpack");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const isDevelopment = process.env.NODE_ENV !== "production";
 // const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-// const pmmmwh = require("@pmmmwh/react-refresh-webpack-plugin");
 //use only test
 
 module.exports = {
-  name: "demo",
-  // mode: "development",
+  name: "setVersionTest",
+  mode: isDevelopment ? "development" : "production",
   //use only test
-  mode: "production",
+  // mode: "production",
   devtool: "eval",
   resolve: {
-    extensions: [".js", ".jsx"],
+    extensions: [".js", ".jsx", "json"],
   },
-  entry: {
-    app: {
-      import: "./client.jsx",
-    },
-    // another: {
-    //   import: [
-    //     "./components/About",
-    //     "./components/ErrorPage",
-    //     "./components/Footer",
-    //   ],
-    //   dependOn: "shared",
-    // },
-    // shared: "styled-components",
-  },
+  entry: "./client.jsx",
   module: {
     rules: [
       {
         test: /\.jsx?/,
-        loader: "babel-loader",
-        options: {
-          presets: ["@babel/preset-env", "@babel/preset-react"],
-          plugins: [
-            "@babel/plugin-proposal-class-properties",
-            // "react-refresh/babel",
-            //use only test
-          ],
-        }, //endOptions
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: require.resolve("babel-loader"),
+            options: {
+              presets: ["@babel/preset-env", "@babel/preset-react"],
+              plugins: [
+                isDevelopment && require.resolve("react-refresh/babel"),
+              ].filter(Boolean),
+            },
+          },
+        ],
       },
-      {
-        test: /\.(txt)/,
-        type: "asset/source",
-      },
-    ], //endRules
-  }, //endModules
-  // plugins: [new pmmmwh()],
-  // plugins: [new BundleAnalyzerPlugin()],
+    ],
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: "./__index.html",
+    }),
+  ],
+  plugins: [
+    // new BundleAnalyzerPlugin(),
+    isDevelopment && new webpack.HotModuleReplacementPlugin(),
+    isDevelopment && new ReactRefreshWebpackPlugin(),
+  ].filter(Boolean),
   //use only test
   output: {
-    filename: "[name].bundle.js",
+    filename: "client.js",
     // chunkFilename: "[name].[chunkhash].js",
-    path: path.join(__dirname, "dist"),
-    publicPath: "dist/",
-    clean: true,
+    path: path.resolve(__dirname, "dist"),
+    publicPath: "/dist/",
+    // clean: true,
   },
   devServer: {
+    port: 9000,
     publicPath: "/dist/",
     hot: true,
   },
-
-  // optimization: {
-  //   splitChunks: {
-  //     name: "vendor",
-  //     // test: /[\\/]node_modules[\\/]/,
-  //     chunks: "initial",
-  //     minSize: 50000,
-  //     minChunks: 1,
-  //   },
-  // },
-  // optimization: {
-  //   splitChunks: {
-  //     cacheGroups: {
-  //       vendor: {
-  //         test: /[\\/]node_modules[\\/]^(react|react-dom)[\\/]/,
-  //         name: "vendor",
-  //         chunks: "initial",
-  //       },
-  //     },
-  //   },
-  // },
-  optimization: {
-    // runtimeChunk: "single",
-  },
-  //optimizationEnd,
 };
+
+// optimization: {
+//   // runtimeChunk: "single",
+//   splitChunks: {
+//     cacheGroups: {
+//       vendor: {
+//         // test:/[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+//         test: /[\\/](react|react-dom)[\\/]/,
+//         name: "vendor",
+//         chunks: "all",
+//       },
+//     },
+//   },
+// },
+//optimizationEnd,
